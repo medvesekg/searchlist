@@ -14,8 +14,9 @@
         .list-container {
             
             
-            height: 400px;
-            overflow: scroll;
+            height: auto;
+            max-height: 400px;
+            overflow: scroll-y;
             
         }
     
@@ -32,22 +33,7 @@
         
     </div>
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
-<script src="searchList.js"></script>
-<script>
 
-    new Vue({
-        
-        data: {
-          
-            items: ["buba", "zabar", "lido", "srbr", "kundis", "filto", "memis", "kin", "labaurasls", "1mkea", "ridol"]
-            
-        },
-        
-       el: "#root"
-        
-    });
-    
-</script>
+<script src="demo.js"></script>
 </body>
 </html>

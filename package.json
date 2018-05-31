@@ -2,10 +2,21 @@
   "name": "search-list",
   "version": "1.0.0",
   "description": "",
-  "main": "searchList.js",
+  "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node_modules/.bin/webpack"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.28.11",
+    "vue-loader": "^15.2.2",
+    "vue-template-compiler": "^2.5.16",
+    "webpack": "^4.10.2",
+    "webpack-cli": "^2.1.4"
+  },
+  "dependencies": {
+    "vue": "^2.5.16"
+  }
 }
