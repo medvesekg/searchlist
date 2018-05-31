@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <style>
+    
+        .active {
+            color: red;
+        }
+        
+        .list-container {
+            
+            
+            height: 400px;
+            overflow: scroll;
+            
+        }
+    
+    </style>
+    
+</head>
+<body>
+    
+    
+    <div id="root" class="container">
+
+        <search-list :items="items">
+        </search-list>
+        
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
+<script src="searchList.js"></script>
+<script>
+
+    new Vue({
+        
+        data: {
+          
+            items: ["buba", "zabar", "lido", "srbr", "kundis", "filto", "memis", "kin", "labaurasls", "1mkea", "ridol"]
+            
+        },
+        
+       el: "#root"
+        
+    });
+    
+</script>
+</body>
+</html>
