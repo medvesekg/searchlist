@@ -9,14 +9,15 @@
                @blur="blurInput" 
                @keydown="keyDownHub($event.key)"> 
 
-        <div>
+        <div class="list-container-wrapper">
             <ul class="list-container list-group" v-if="displayListContainer" ref="listContainer" style="position:relative">
                 <list-item  v-for="(item, index) in matches" 
                             :key="index" 
+                            :id="index"
                             :isActive="index === activeChild" 
                             @mousedown.native="clickSelect($event.target)">
 
-                    {{ item }}
+                    <slot :item="item">{{ item }}</slot>
 
                 </list-item>
             </ul>
@@ -31,7 +32,14 @@ import ListItem from './ListItem.vue';
 
 export default {
  
-  props: ['items'],
+  props: {
+      items: {
+          type: Array,
+          default: function() {
+              return [];
+          }
+      }
+  },
 
   components: {'list-item': ListItem},
 
@@ -40,40 +48,58 @@ export default {
         return {
             searchString: "", 
             displayListContainer: false, 
-            activeChild: null, 
+            activeChild: null,
+            matches: this.items 
         };
 
     },
 
-    computed: {
 
-        matches: function() {
-            
-            if(!this.searchString) {
-                
-                return this.items;
-                
-            } else {
-
-                return this.items.filter(item => {
-
-                    return item.toLowerCase().includes(this.searchString.toLowerCase());
-
-                });
-            }
-
-        },
-
-
-    },
 
     methods: {
+
+        findMatches() {
+
+            this.$nextTick(function() {
+
+            if(!this.searchString) {
+                
+                this.matches = this.items;
+                this.activeChild = null;
+                
+            } else {
+                console.log("h");
+                this.matches = this.items;
+
+                this.$nextTick(function() {
+
+                    let matching = this.$children.filter(child => {
+
+                        if (child.$el.textContent.toLowerCase().includes(this.searchString.toLowerCase())) {
+                            return true;
+                        }
+                    
+                    });
+          
+                    this.matches = matching.map(child => this.items[child.id]);
+
+                    this.activeChild = this.matches.length > 0 ? 0 : null;
+
+                }.bind(this));
+            
+                
+                
+            }
+            }.bind(this));
+
+        },
 
 
         focusInput() {
 
             this.displayListContainer = true;
             this.$refs.searchInput.select();
+            this.matches = this.items;
     
 
         },
@@ -85,38 +111,48 @@ export default {
         },
 
         moveSelectionDown() {
+
+            if(this.matches.length === 0) {
+                return;
+            }
           
+            this.displayListContainer = true;
 
-            if (this.activeChild === null || this.activeChild < 0) {
-                
-                this.activeChild = 0;
-
-
-            } else {
-
-                this.activeChild++;
+            this.$nextTick(function() {
+                if (this.activeChild === null || this.activeChild < 0) {
+                    
+                    this.activeChild = 0;
 
 
-            }
+                } else {
+                    
+                    this.activeChild++;
 
-            if(this.activeChild >= this.matches.length - 1) {
-                this.activeChild = this.matches.length -1;
-            }
-            
 
-            this.updateSelection();
+                }
 
+                if(this.activeChild >= this.matches.length - 1) {
+                    this.activeChild = this.matches.length -1;
+                }
+
+                this.updateSelection();
+
+            }.bind(this));
 
         },
 
         moveSelectionUp() {
 
-            
+            if(this.matches.length === 0) {
+                return;
+            }
 
             this.activeChild--;
 
-            if(this.activeChild <= 0) {
-                this.activeChild = 0;
+            if(this.activeChild <= -1) {
+                this.activeChild = -1;
+                this.displayListContainer = false;
+                return;
             }
 
             this.updateSelection();
@@ -126,7 +162,7 @@ export default {
 
         updateSelection() {
 
-        
+           
             let selectedItem = this.$children[this.activeChild].$el;
 
             if(selectedItem) {
@@ -158,10 +194,11 @@ export default {
 
         enterSelect() {
             
-            if(this.activeChild !== null) {
+            if(this.activeChild !== null && this.activeChild != -1) {
 
-                let selectedItem = this.matches[this.activeChild];
-                this.searchString = selectedItem
+            
+                let selectedChild = this.$children[this.activeChild];
+                this.searchString = selectedChild.$el.textContent;
 
 
                 this.displayListContainer = false;
@@ -182,7 +219,7 @@ export default {
         },
         
         keyDownHub(key) {
-            
+       
             switch(key) {
                 
                 case 'ArrowUp':
@@ -196,10 +233,16 @@ export default {
                 case 'Enter':
                     this.enterSelect();
                     break;
+
+                case 'Escape':
+                    this.displayListContainer = false;
+                    this.activeChild = 0;
+                    break;
                 
                 default:
                     this.displayListContainer = true;
-                    this.activeChild = 0;
+                    this.findMatches();
+                    break;
             }
             
         }
@@ -214,12 +257,20 @@ export default {
 <style scoped>
 
     .list-container {
-        
+            position: absolute;
+            bottom: 0;
             height: auto;
             max-height: 400px;
-            overflow: scroll-y;
+            overflow-y: scroll;
+            border-radius: 0.25rem;
+            border-bottom: 1px solid rgba(0,0,0,.125)
             
         }
+
+    .list-container-wrapper {
+        position: relative;
+        height: 0;
+    }
 
 </style>
 

@@ -6,6 +6,14 @@
 
 <script>
 export default {
-    props: ['isActive'],
+    props: ['isActive', 'id'],
+
 }
 </script>
+
+<style scoped>
+    .list-item:hover {
+        color: rgba(0,0,0,.5);
+    }
+</style>
+

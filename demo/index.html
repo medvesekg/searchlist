@@ -7,18 +7,10 @@
     
     <style>
     
-        .active {
-            color: red;
-        }
+      #root>div {
+        margin-top: 20px;
+      }
         
-        .list-container {
-            
-            
-            height: auto;
-            max-height: 400px;
-            overflow: scroll-y;
-            
-        }
     
     </style>
     
@@ -27,9 +19,17 @@
     
     
     <div id="root" class="container">
+        
+        <div>
+            <search-list :items="itemsStrings">
+            </search-list>
+        </div>
 
-        <search-list :items="items">
-        </search-list>
+        <div>
+            <search-list :items="itemsObjects">
+                <template slot-scope="prop">{{ prop.item.name }}</template>
+            </search-list>
+        </div>
         
     </div>
     
