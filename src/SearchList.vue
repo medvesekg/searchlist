@@ -198,7 +198,7 @@ export default {
 
             
                 let selectedChild = this.$children[this.activeChild];
-                this.searchString = selectedChild.$el.textContent;
+                this.searchString = selectedChild.$el.innerText;
 
 
                 this.displayListContainer = false;
@@ -210,7 +210,7 @@ export default {
         
         clickSelect(target) {
 
-            this.searchString = target.innerHTML;
+            this.searchString = target.innerText;
 
             this.displayListContainer = false;
          

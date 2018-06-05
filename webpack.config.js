@@ -33,5 +33,5 @@ module.exports = {
       vue: 'vue/dist/vue.js'
     }
   },
-  externals: [nodeExternals()]
+  //externals: [nodeExternals()]
 };

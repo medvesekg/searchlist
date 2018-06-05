@@ -27,7 +27,9 @@
 
         <div>
             <search-list :items="itemsObjects">
-                <template slot-scope="prop">{{ prop.item.name }}</template>
+                <template slot-scope="prop">
+                    {{ prop.item.name }}
+                </template>
             </search-list>
         </div>
         
