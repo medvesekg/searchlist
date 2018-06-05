@@ -68,7 +68,7 @@ export default {
                 this.activeChild = null;
                 
             } else {
-                console.log("h");
+         
                 this.matches = this.items;
 
                 this.$nextTick(function() {
@@ -245,11 +245,14 @@ export default {
                     break;
             }
             
-        }
-
-
-
+        },
     },
+
+    watch: {
+            items: function() {
+                this.findMatches();
+            }
+        }
 
 }
 </script>
