@@ -4,6 +4,7 @@
         <input ref="searchInput" 
                type="text" 
                class="search form-control" 
+               :name="name"
                v-model="searchString" 
                @focus="focusInput" 
                @blur="blurInput" 
@@ -38,6 +39,9 @@ export default {
           default: function() {
               return [];
           }
+      },
+      name: {
+          type: String
       }
   },
 
