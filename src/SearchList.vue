@@ -15,7 +15,7 @@
                             :key="index" 
                             :id="index"
                             :isActive="index === activeChild" 
-                            @mousedown.native="clickSelect($event.target)">
+                            @mousedown.native="clickSelect($event.target, item)">
 
                     <slot :item="item">{{ item }}</slot>
 
@@ -198,6 +198,7 @@ export default {
 
             
                 let selectedChild = this.$children[this.activeChild];
+                this.$emit('selected', this.matches[this.activeChild]);
                 this.searchString = selectedChild.$el.innerText;
 
 
@@ -208,9 +209,11 @@ export default {
 
         },
         
-        clickSelect(target) {
+        clickSelect(target, item) {
 
             this.searchString = target.innerText;
+
+            this.$emit('selected', item);
 
             this.displayListContainer = false;
          
