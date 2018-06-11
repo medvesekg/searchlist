@@ -3,7 +3,8 @@
     <div>  
         <input ref="searchInput" 
                type="text" 
-               class="search form-control" 
+               class="search form-control"
+               autocomplete="off" 
                :name="name"
                v-model="searchString" 
                @focus="focusInput" 
