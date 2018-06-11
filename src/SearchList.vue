@@ -43,6 +43,9 @@ export default {
       },
       name: {
           type: String
+      },
+      value: {
+          type: String
       }
   },
 
@@ -51,7 +54,7 @@ export default {
     data: function() {
 
         return {
-            searchString: "", 
+            searchString: this.value, 
             displayListContainer: false, 
             activeChild: null,
             matches: this.items 
