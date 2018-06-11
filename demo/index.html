@@ -21,16 +21,23 @@
     <div id="root" class="container">
         
         <div>
-            <search-list :items="itemsStrings">
+            <label>Strings</label>
+            <search-list :items="itemsStrings" @selected="selected=$event">
             </search-list>
         </div>
 
         <div>
-            <search-list :items="itemsObjects">
+            <label>Objects</label>
+            <search-list :items="itemsObjects" @selected="selected=$event">
                 <template slot-scope="prop">
                     {{ prop.item.name }}
                 </template>
             </search-list>
+        </div>
+
+        
+        <div>
+            <p>Last selected: {{ selected }}</p>
         </div>
         
     </div>

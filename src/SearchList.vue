@@ -9,10 +9,10 @@
                v-model="searchString" 
                @focus="focusInput" 
                @blur="blurInput" 
-               @keydown="keyDownHub($event.key, $event)"> 
+               @keydown="keyDownHub($event)"> 
 
-        <div class="list-container-wrapper">
-            <ul class="list-container list-group" v-if="displayListContainer" ref="listContainer" style="position:relative">
+        <div class="list-container">
+            <ul class="search-list list-group" v-if="displayList" ref="list">
                 <list-item  v-for="(item, index) in matches" 
                             :key="index" 
                             :id="index"
@@ -35,88 +35,103 @@ import ListItem from './ListItem.vue';
 export default {
  
   props: {
+      /* Can be an array of strings or array of objects. */
       items: {
           type: Array,
           default: function() {
               return [];
           }
       },
+      /* Name attribute for the input. */
       name: {
           type: String
       },
+      /* Initial value for the input field. Optional. */
       value: {
-          type: String
+          type: String,
+          default: ""
       }
   },
 
-  components: {'list-item': ListItem},
+  components: {
+      'list-item': ListItem
+    },
+
 
     data: function() {
 
         return {
             searchString: this.value, 
-            displayListContainer: false, 
-            activeChild: null,
+            displayList: false, 
+            activeChild: null, // Used to track which item is highlighted with keyboard arrow up and down keys
             matches: this.items 
         };
 
     },
 
 
-
     methods: {
+        
 
+        /* Finds all items that match the search string */
         findMatches() {
 
             this.$nextTick(function() {
-
-            if(!this.searchString) {
                 
-                this.matches = this.items;
-                this.activeChild = null;
-                
-            } else {
-         
-                this.matches = this.items;
-
-                this.$nextTick(function() {
-
-                    let matching = this.$children.filter(child => {
-
-                        if (child.$el.textContent.toLowerCase().includes(this.searchString.toLowerCase())) {
-                            return true;
-                        }
+                /* If search string is empty set matches to the full list and reset active child */
+                if(!this.searchString) {
                     
-                    });
-          
-                    this.matches = matching.map(child => this.items[child.id]);
-
-                    this.activeChild = this.matches.length > 0 ? 0 : null;
-
-                }.bind(this));
-            
+                    this.matches = this.items;
+                    this.activeChild = null;
                 
-                
-            }
+                } else {
+                    
+                    /* Set matches to the full list of items and wait for it to render  */
+                    this.matches = this.items;
+
+                    this.$nextTick(function() {
+                        
+                        /* Find out which items' text matches the search string */
+                        let matching = this.$children.filter(child => {
+
+                            if (child.$el.textContent.toLowerCase().includes(this.searchString.toLowerCase())) {
+                                return true;
+                            }
+                        
+                        });
+
+                        /* Find the actual items that correspond to the text */
+                        this.matches = matching.map(child => this.items[child.id]);
+
+                        /* If any matches were found set the first item to active state, otherwise there is no active item */
+                        this.activeChild = this.matches.length > 0 ? 0 : null;
+
+                    }.bind(this));                       
+                }
             }.bind(this));
 
         },
 
 
+        /* When user focuses on the input, dispaly the seach list, find any matches, and select
+            any text that may be in the input */
         focusInput() {
 
-            this.displayListContainer = true;
+            this.displayList = true;
             this.$refs.searchInput.select();
-            this.matches = this.items;
+            this.findMatches();
     
 
         },
 
+
+        /* When user removes focus from input, close the search list and reset the active item */
         blurInput() {
 
-            this.displayListContainer = false;
+            this.displayList = false;
             this.activeChild = null;
         },
+
 
         moveSelectionDown() {
 
@@ -124,7 +139,7 @@ export default {
                 return;
             }
           
-            this.displayListContainer = true;
+            this.displayList = true;
 
             this.$nextTick(function() {
                 if (this.activeChild === null || this.activeChild < 0) {
@@ -159,7 +174,7 @@ export default {
 
             if(this.activeChild <= -1) {
                 this.activeChild = -1;
-                this.displayListContainer = false;
+                this.displayList = false;
                 return;
             }
 
@@ -177,8 +192,8 @@ export default {
 
                 let childOffset = selectedItem.offsetTop;
                 let childHeight = selectedItem.offsetHeight;
-                let containerHeight = this.$refs.listContainer.offsetHeight;
-                let containerScrollPosition = this.$refs.listContainer.scrollTop
+                let containerHeight = this.$refs.list.offsetHeight;
+                let containerScrollPosition = this.$refs.list.scrollTop
           
                 let containerTop = containerScrollPosition;
                 let containerBottom = containerHeight + containerScrollPosition - childHeight;
@@ -186,12 +201,12 @@ export default {
 
                 if(childOffset + childHeight > containerBottom) {
 
-                    this.$refs.listContainer.scrollTop = containerScrollPosition + childHeight;
+                    this.$refs.list.scrollTop = containerScrollPosition + childHeight;
 
                 } 
                 else if (childOffset < containerTop) {
                     
-                    this.$refs.listContainer.scrollTop = childOffset;
+                    this.$refs.list.scrollTop = childOffset;
                     
                 }
             }
@@ -210,7 +225,7 @@ export default {
                 this.searchString = selectedChild.$el.innerText;
 
 
-                this.displayListContainer = false;
+                this.displayList = false;
                 this.activeChild = null;
 
             }
@@ -223,15 +238,15 @@ export default {
 
             this.$emit('selected', item);
 
-            this.displayListContainer = false;
+            this.displayList = false;
          
             
 
         },
         
-        keyDownHub(key, event) {
+        keyDownHub(event) {
        
-            switch(key) {
+            switch(event.key) {
                 
                 case 'ArrowUp':
                     this.moveSelectionUp();
@@ -247,12 +262,12 @@ export default {
                     break;
 
                 case 'Escape':
-                    this.displayListContainer = false;
-                    this.activeChild = 0;
+                    this.displayList = false;
+                    this.activeChild = null;
                     break;
                 
                 default:
-                    this.displayListContainer = true;
+                    this.displayList = true;
                     this.findMatches();
                     break;
             }
@@ -271,9 +286,8 @@ export default {
 
 <style scoped>
 
-    .list-container {
-            position: absolute;
-            bottom: 0;
+    /* This is the unordered list that holds the search results */
+    .search-list {
             height: auto;
             max-height: 400px;
             overflow-y: scroll;
@@ -282,8 +296,9 @@ export default {
             
         }
 
-    .list-container-wrapper {
-        position: relative;
+    /* The container for the list has zero height which prevents the search list from
+        affecting the page flow when it appears. Instead it renders above any other elements */
+    .list-container {
         height: 0;
     }
 

@@ -9,7 +9,8 @@ new Vue({
 
     data: {
         itemsStrings: ["buba", "zabar", "lido", "srbr", "kundis", "filto", "memis", "kin", "labaurasls", "1mkea", "ridol"],
-        itemsObjects: []
+        itemsObjects: [],
+        selected: ""
     },
 
     mounted() {
@@ -19,7 +20,8 @@ new Vue({
                     {name: "bonno", key: "D1"},
                     {name: "strik", key: "Z5"},
                     {name: "ordos", key: "L0"},
-                    {name: "bouhti", key: "G12"}
+                    {name: "bouhti", key: "G12"},
+                    {name: "nbuod", key: "S1"}
                 ]
                 
         }.bind(this),3000)
