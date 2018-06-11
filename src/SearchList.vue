@@ -7,7 +7,7 @@
                v-model="searchString" 
                @focus="focusInput" 
                @blur="blurInput" 
-               @keydown="keyDownHub($event.key)"> 
+               @keydown="keyDownHub($event.key, $event)"> 
 
         <div class="list-container-wrapper">
             <ul class="list-container list-group" v-if="displayListContainer" ref="listContainer" style="position:relative">
@@ -221,7 +221,7 @@ export default {
 
         },
         
-        keyDownHub(key) {
+        keyDownHub(key, event) {
        
             switch(key) {
                 
@@ -234,6 +234,7 @@ export default {
                     break;
                 
                 case 'Enter':
+                    event.preventDefault();
                     this.enterSelect();
                     break;
 
