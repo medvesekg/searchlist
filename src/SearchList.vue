@@ -292,7 +292,8 @@ export default {
             max-height: 400px;
             overflow-y: scroll;
             border-radius: 0.25rem;
-            border-bottom: 1px solid rgba(0,0,0,.125)
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            z-index: 100;
             
         }
 
