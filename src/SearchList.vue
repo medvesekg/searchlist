@@ -288,12 +288,14 @@ export default {
 
     /* This is the unordered list that holds the search results */
     .search-list {
+            position: relative;
             height: auto;
             max-height: 400px;
             overflow-y: scroll;
             border-radius: 0.25rem;
             border-bottom: 1px solid rgba(0,0,0,.125);
             z-index: 100;
+            position: relative;
             
         }
 
