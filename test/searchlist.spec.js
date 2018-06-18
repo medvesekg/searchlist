@@ -73,4 +73,55 @@ describe('Search List', function() {
 
     });
 
+    it('allows to traverse elements with arrow keys', function(done) {
+
+        let items = ['foo', 'bar', 'baz'];
+        let wrapper = mount(SearchList, {
+            propsData: {
+                items
+            }
+        });
+
+        let input = wrapper.find('input');
+        input.trigger('focus');
+        input.trigger('keyup', {key: 'ArrowDown'});
+        input.trigger('keyup', {key: 'ArrowDown'});
+        input.trigger('keyup', {key: 'ArrowDown'});
+        input.trigger('keyup', {key: 'ArrowUp'});
+        
+        
+        Vue.config.errorHandler = done
+        Vue.nextTick(function () {
+            
+            let listItems = wrapper.findAll('li').wrappers;            
+            expect(listItems[1].classes()).to.include('active');
+            done();
+            
+
+        });  
+        
+
+    });
+
+
+    it('emits the selected item on enter press', function() {
+
+        let items = ['foo', 'bar', 'baz'];
+        let wrapper = mount(SearchList, {
+            propsData: {
+                items
+            }
+        });
+
+        let input = wrapper.find('input');
+        input.trigger('focus');
+        input.trigger('keyup', {key: 'ArrowDown'});
+        input.trigger('keyup', {key: 'ArrowDown'});
+        input.trigger('keyup', {key: "Enter"})
+
+        expect(wrapper.emitted().selected[0]).to.have.members([items[1]]);
+
+
+    });
+
 });
