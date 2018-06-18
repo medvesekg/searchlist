@@ -50,11 +50,12 @@ export default {
       value: {
           type: String,
           default: ""
-      }
+      },
+
   },
 
   components: {
-      'list-item': ListItem
+      ListItem
     },
 
 
@@ -64,7 +65,7 @@ export default {
             searchString: this.value, 
             displayList: false, 
             activeChild: null, // Used to track which item is highlighted with keyboard arrow up and down keys
-            matches: this.items 
+            matches: this.items, // Items that match the search string
         };
 
     },
@@ -76,7 +77,7 @@ export default {
         /* Finds all items that match the search string */
         findMatches() {
 
-            this.$nextTick(function() {
+            //this.$nextTick(function() {
                 
                 /* If search string is empty set matches to the full list and reset active child */
                 if(!this.searchString) {
@@ -86,29 +87,36 @@ export default {
                 
                 } else {
                     
-                    /* Set matches to the full list of items and wait for it to render  */
-                    this.matches = this.items;
-
-                    this.$nextTick(function() {
-                        
-                        /* Find out which items' text matches the search string */
-                        let matching = this.$children.filter(child => {
-
-                            if (child.$el.textContent.toLowerCase().includes(this.searchString.toLowerCase())) {
-                                return true;
-                            }
-                        
-                        });
-
-                        /* Find the actual items that correspond to the text */
-                        this.matches = matching.map(child => this.items[child.id]);
-
-                        /* If any matches were found set the first item to active state, otherwise there is no active item */
-                        this.activeChild = this.matches.length > 0 ? 0 : null;
-
-                    }.bind(this));                       
+                    this.findMatchesInHTML();            
                 }
-            }.bind(this));
+            //}.bind(this));
+
+        },
+
+        // Find matching items by comparing rendered html output to the search string
+        findMatchesInHTML() {
+            
+            /* Set matches to the full list of items and wait for it to render  */
+            this.matches = this.items;
+
+            this.$nextTick(function() {
+                
+                /* Find out which items' text matches the search string */
+                let matching = this.$children.filter(child => {
+
+                    if (child.$el.textContent.toLowerCase().includes(this.searchString.toLowerCase())) {
+                        return true;
+                    }
+                
+                });
+
+                /* Find the actual items that correspond to the text */
+                this.matches = matching.map(child => this.items[child.id]);
+
+                /* If any matches were found set the first item to active state, otherwise there is no active item */
+                this.activeChild = this.matches.length > 0 ? 0 : null;
+
+            }.bind(this)); 
 
         },
 
@@ -141,26 +149,24 @@ export default {
           
             this.displayList = true;
 
-            this.$nextTick(function() {
-                if (this.activeChild === null || this.activeChild < 0) {
-                    
-                    this.activeChild = 0;
+            if (this.activeChild === null || this.activeChild < 0) {
+                
+                this.activeChild = 0;
 
 
-                } else {
-                    
-                    this.activeChild++;
+            } else {
+                
+                this.activeChild++;
 
 
-                }
+            }
 
-                if(this.activeChild >= this.matches.length - 1) {
-                    this.activeChild = this.matches.length -1;
-                }
+            if(this.activeChild >= this.matches.length - 1) {
+                this.activeChild = this.matches.length -1;
+            }
 
-                this.updateSelection();
+            this.updateSelection();
 
-            }.bind(this));
 
         },
 
@@ -273,6 +279,13 @@ export default {
             }
             
         },
+
+        getNestedProperty(propertyString, object) {
+            let props = propertyString.split("\.|\[(\w+)\]");
+            props = props.filter(prop => prop !== "" && prop !== undefined && prop !== null);
+            return propertyString.reduce((acc,cur) => acc[cur], object);
+        }
+
     },
 
     watch: {
@@ -295,7 +308,6 @@ export default {
             border-radius: 0.25rem;
             border-bottom: 1px solid rgba(0,0,0,.125);
             z-index: 100;
-            position: relative;
             
         }
 
