@@ -9,7 +9,7 @@
                v-model="searchString" 
                @focus="focusInput" 
                @blur="blurInput" 
-               @keydown="keyDownHub($event)"> 
+               @keyup="keyUpHub($event)"> 
 
         <div class="list-container">
             <ul class="search-list list-group" v-if="displayList" ref="list">
@@ -34,7 +34,7 @@ import ListItem from './ListItem.vue';
 
 export default {
  
-  props: {
+    props: {
       /* Can be an array of strings or array of objects. */
       items: {
           type: Array,
@@ -54,10 +54,9 @@ export default {
 
   },
 
-  components: {
+    components: {
       ListItem
     },
-
 
     data: function() {
 
@@ -70,6 +69,10 @@ export default {
 
     },
 
+    mounted() {
+
+    },
+
 
     methods: {
         
@@ -77,19 +80,18 @@ export default {
         /* Finds all items that match the search string */
         findMatches() {
 
-            //this.$nextTick(function() {
                 
-                /* If search string is empty set matches to the full list and reset active child */
-                if(!this.searchString) {
-                    
-                    this.matches = this.items;
-                    this.activeChild = null;
+            /* If search string is empty set matches to the full list and reset active child */
+            if(!this.searchString) {
                 
-                } else {
-                    
-                    this.findMatchesInHTML();            
-                }
-            //}.bind(this));
+                this.matches = this.items;
+                this.activeChild = null;
+            
+            } else {
+                
+                this.findMatchesInHTML();            
+            }
+    
 
         },
 
@@ -250,7 +252,7 @@ export default {
 
         },
         
-        keyDownHub(event) {
+        keyUpHub(event) {
        
             switch(event.key) {
                 

@@ -7,79 +7,69 @@ import Vue from 'vue';
 
 describe('Search List', function() {
     
-    it('is initialized with the correct attributes', function() {
+
+    it('displays all elements when search string is empty', function(done) {
         
-        let wrapper = mount(SearchList);
-        
-        expect(wrapper.vm.searchString).to.equal("", "searchString");
-        expect(wrapper.vm.displayList).to.equal(false, "displayList");
-        expect(wrapper.vm.activeChild).to.equal(null, "activeChild");
-        expect(wrapper.vm.matches).to.be.an('array').that.is.empty;
-
-    });
-
-    it('takes an array of items as a prop', function() {
-
+        let items = ['foo', 'bar', 'baz'];
         let wrapper = mount(SearchList, {
             propsData: {
-                items: ['Foo', 'Bar']
-            }
-        });
-        
-        expect(wrapper.vm.items).to.be.an('array').that.has.members(['Foo', 'Bar']);
-
-    });
-
-    it('takes a name attribute as a prop', function() {
-
-        let wrapper = mount(SearchList, {
-            propsData: {
-                name: "foobar"
-            }
-        });
-        
-        expect(wrapper.props().name).to.equal("foobar");
-        expect(wrapper.find('input').attributes().name).to.equal('foobar');
-
-    });
-
-    it('optionally takes an initial value as a prop', function() {
-
-        let wrapper = mount(SearchList, {
-            propsData: {
-                value: "foobar"
-            }
-        });
-
-        expect(wrapper.props().value).to.equal('foobar');
-        expect(wrapper.find('input').element.value).to.equal('foobar');
-
-    });
-
-
-
-    it('finds matching strings from an array', function(done) {
-        
-        let wrapper = mount(SearchList, {
-            propsData: {
-                items: ['foo', 'bar', 'baz']
+                items
             }
         });
 
         let input = wrapper.find('input');
-        input.element.value = "foo";
-        input.trigger('input');
-        input.trigger('keydown');
+        input.trigger('focus');
         
         Vue.config.errorHandler = done
         Vue.nextTick(function () {
-            Vue.nextTick(function() {
-            
-                expect(wrapper.vm.matches).to.be.an('array').that.has.members(['foo']);
-                done();
-            })
+            expect(wrapper.find('ul').element.childNodes.length).to.equal(items.length);
+            done();
+
         });
         
+
+    });
+
+    it('finds elements matching the search string', function(done) {
+        
+        let items = ['foo', 'bar', 'baz'];
+        let wrapper = mount(SearchList, {
+            propsData: {
+                items
+            }
+        });
+
+        let input = wrapper.find('input');
+        input.element.value = "b";
+        input.trigger('input');
+        input.trigger('keyup');
+ 
+         
+        Vue.config.errorHandler = done
+        Vue.nextTick(function () {
+        
+            expect(wrapper.vm.matches).to.have.members(['bar', 'baz']);
+            done();
+
+        });
+
+    });
+
+    it('emits the selected element when clicked', function() {
+
+        let items = ['foo', 'bar', 'baz'];
+        let wrapper = mount(SearchList, {
+            propsData: {
+                items
+            }
+        });
+
+        let input = wrapper.find('input');
+        input.trigger('focus');
+        let listItem = wrapper.find('li');
+        listItem.trigger('mousedown');
+
+        expect(wrapper.emitted().selected[0]).to.have.members([items[0]]);
 
     });
 
