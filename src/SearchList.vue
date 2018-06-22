@@ -283,9 +283,12 @@ export default {
         },
 
         getNestedProperty(propertyString, object) {
-            let props = propertyString.split("\.|\[(\w+)\]");
+            let props = propertyString.split(/\.|\[([A-Za-z0-9_ ]+)\]/);
             props = props.filter(prop => prop !== "" && prop !== undefined && prop !== null);
-            return propertyString.reduce((acc,cur) => acc[cur], object);
+            return props.reduce((acc,cur) => {
+                if(acc === undefined) return undefined;
+                return acc[cur];
+                }, object);
         }
 
     },
@@ -293,6 +296,9 @@ export default {
     watch: {
             items: function() {
                 this.findMatches();
+            },
+            searchString() {
+                this.$emit('input', this.searchString);
             }
         }
 
